@@ -380,6 +380,29 @@ RSpec.describe "Resolving" do
     should_resolve_without_dependency_api %w[myrack-3.0.0 standalone_migrations-2.0.4]
   end
 
+  it "does not filter out versions with invalid development self-dependencies" do
+    @index = build_index do
+      gem "myrack", "3.0.0"
+
+      gem "standalone_migrations", "7.1.0" do
+        dep "myrack", "~> 2.0"
+      end
+
+      gem "standalone_migrations", "2.0.4" do
+        development "standalone_migrations", "~> 1.0"
+      end
+
+      gem "standalone_migrations", "1.0.13" do
+        dep "myrack", ">= 0"
+      end
+    end
+
+    dep "myrack", "~> 3.0"
+    dep "standalone_migrations"
+
+    should_resolve_as %w[myrack-3.0.0 standalone_migrations-2.0.4]
+  end
+
   it "resolves fine cases that need joining unbounded disjoint ranges" do
     @index = build_index do
       gem "inspec", "5.22.3" do

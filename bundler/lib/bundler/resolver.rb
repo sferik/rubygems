@@ -405,7 +405,7 @@ module Bundler
     # Ignore versions that depend on themselves incorrectly
     def filter_invalid_self_dependencies(specs, name)
       specs.reject do |s|
-        s.dependencies.any? {|d| d.name == name && !d.requirement.satisfied_by?(s.version) }
+        s.runtime_dependencies.any? {|d| d.name == name && !d.requirement.satisfied_by?(s.version) }
       end
     end
 
